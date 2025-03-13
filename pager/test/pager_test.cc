@@ -33,6 +33,54 @@ void printFileContents(const std::string &filename) {
   }
 }
 
+/*
+ * This test is based on the example from SimpleSqlite
+ */
+TEST(PagerFullTest, ExampleFromSimpleSqlite) {
+  std::string filename = "test_ExampleFromSimpleSqlite.db";
+  std::string journal_filename = "test_ExampleFromSimpleSqlite.db-journal";
+  std::remove(filename.c_str());
+  std::remove(journal_filename.c_str());
+
+  ResultCode rc;
+
+  // Step 1: Open a Pager with test.db as its filename
+  // Use SqlitePagerGet to load 3 pages into the cache
+
+  // Step 2: Use lookup to write data into the 3 pages
+
+  // str_1 has the byte values of "Page One"
+  std::vector<std::byte> str_1 = {
+      std::byte(0x50), std::byte(0x61), std::byte(0x67), std::byte(0x65),
+      std::byte(0x20), std::byte(0x4f), std::byte(0x6e), std::byte(0x65)};
+
+  // str_2 has the byte values of "Page Two"
+  std::vector<std::byte> str_2 = {
+      std::byte(0x50), std::byte(0x61), std::byte(0x67), std::byte(0x65),
+      std::byte(0x20), std::byte(0x54), std::byte(0x77), std::byte(0x6f)};
+
+  // str_3 has the byte values of "Page Three"
+  std::vector<std::byte> str_3 = {
+      std::byte(0x50), std::byte(0x61), std::byte(0x67), std::byte(0x65),
+      std::byte(0x20), std::byte(0x54), std::byte(0x68), std::byte(0x72),
+      std::byte(0x65), std::byte(0x65)};
+
+  // Step 3: Read the pages to make sure changes are committed
+
+  // Step 4: Write data into the third page and rollback to the previous state
+  // before commit the changes
+
+  // str_4 has the byte values of "Page test rollback"
+  std::vector<std::byte> str_4 = {
+      std::byte(0x50), std::byte(0x61), std::byte(0x67), std::byte(0x65),
+      std::byte(0x20), std::byte(0x74), std::byte(0x65), std::byte(0x73),
+      std::byte(0x74), std::byte(0x20), std::byte(0x72), std::byte(0x6f),
+      std::byte(0x6c), std::byte(0x6c), std::byte(0x62), std::byte(0x61),
+      std::byte(0x63), std::byte(0x6b)};
+
+  // Step 5: Check that the page count is 3
+}
+
 TEST(PagerRollbackTest, TestRollbackAndCommit) {
   std::string filename = "test_TestRollbackAndCommit.db";
   ResultCode rc;
