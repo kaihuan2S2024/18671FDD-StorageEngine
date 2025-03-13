@@ -1,0 +1,5 @@
+if(EXISTS "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/utility/test/sql_rc_test[1]_tests.cmake")
+  include("/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/utility/test/sql_rc_test[1]_tests.cmake")
+else()
+  add_test(sql_rc_test_NOT_BUILT sql_rc_test_NOT_BUILT)
+endif()

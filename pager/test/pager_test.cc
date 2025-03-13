@@ -1,0 +1,201 @@
+//
+// Created by Yiyang Huo on 9/8/23.
+//
+
+#include "pager.h"
+
+#include <fstream>
+#include <ostream>
+
+#include "gtest/gtest.h"
+#include "os.h"
+
+void printFileContents(const std::string &filename) {
+  std::ifstream file(filename, std::ios::binary);
+  if (file.is_open()) {
+    // Read the entire file into a buffer
+    std::vector<char> buffer(std::istreambuf_iterator<char>(file), {});
+    file.seekg(0, std::ios::beg);  // Reset the file pointer to the beginning
+                                   // (for future reads
+
+    // Iterate over the buffer and print only printable characters
+    for (const char &byte : buffer) {
+      if (std::isprint(byte) || byte == '\n' || byte == '\r') {
+        std::cout << byte;
+      }
+    }
+
+    std::cout << std::endl;  // Flush the line
+
+    file.close();
+  } else {
+    std::cerr << "Unable to open file " << filename << std::endl;
+  }
+}
+
+TEST(PagerRollbackTest, TestRollbackAndCommit) {
+  std::string filename = "test_TestRollbackAndCommit.db";
+  ResultCode rc;
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+  rc = pager.SqlitePagerRollback();
+  EXPECT_EQ(rc, ResultCode::kOk);
+  rc = pager.SqlitePagerCommit();
+  EXPECT_EQ(rc, ResultCode::kError);
+}
+
+// Test rollback when the journal file is empty
+TEST(PagerRollbackTest, MultipleRollbacks) {
+  std::string filename = "test_MultipleRollbacks.db";
+  std::remove(filename.c_str());
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+
+  for (int i = 0; i < 5; ++i) {
+    ResultCode rc = pager.SqlitePagerRollback();
+    EXPECT_EQ(rc, ResultCode::kOk);
+  }
+}
+
+TEST(PagerGetTest, TestFetchOnePage) {
+  std::string filename = "test_TestFetchOnePage.db";
+  std::string journal_filename = "test_TestFetchOnePage.db-journal";
+  // Delete these 2 files
+  std::remove(filename.c_str());
+  std::remove(journal_filename.c_str());
+  ResultCode rc;
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+  BasePage *p_base_page = nullptr;
+  rc = pager.SqlitePagerGet(1, &p_base_page, SampleMemPage::create);
+  rc = pager.SqlitePagerGet(2, &p_base_page, SampleMemPage::create);
+  rc = pager.SqlitePagerGet(3, &p_base_page, SampleMemPage::create);
+  rc = pager.SqlitePagerLookup(1, &p_base_page);
+  rc = pager.SqlitePagerWrite(p_base_page);
+  EXPECT_EQ(rc, ResultCode::kOk);
+}
+
+// Verify that a page can be fetched and created if not in the cache.
+TEST(PagerGetTest, BasicPageFetch) {
+  std::string filename = "test_BasicPageFetch.db";
+  std::remove(filename.c_str());
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+
+  BasePage *p_page = nullptr;
+  ResultCode rc = pager.SqlitePagerGet(1, &p_page, SampleMemPage::create);
+  EXPECT_EQ(rc, ResultCode::kOk);
+  EXPECT_NE(p_page, nullptr);
+
+  // Verify page number
+  EXPECT_EQ(pager.SqlitePagerPageNumber(p_page), 1);
+
+  // Check the content of the newly created page (should be zero-initialized)
+  std::vector<std::byte> expected_content(1024, std::byte(0));
+  EXPECT_EQ(std::memcmp(p_page->p_image_->data(), expected_content.data(),
+                        expected_content.size()),
+            0);
+}
+
+TEST(PagerPageCountTest, DatabaseFileEmpty) {
+  std::string filename = "test_DatabaseFileEmpty.db";
+  std::string journal_filename = "test_DatabaseFileEmpty.db-journal";
+  // Delete these 2 files
+  std::remove(filename.c_str());
+  std::remove(journal_filename.c_str());
+  ResultCode rc;
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+  BasePage *p_base_page = nullptr;
+  u32 page_count;
+  // There is nothing in the database file
+  // So the page count should be 0
+  page_count = pager.SqlitePagerPageCount();
+  EXPECT_EQ(page_count, 0);
+  // Load one page into the cache
+  rc = pager.SqlitePagerGet(1, &p_base_page, SampleMemPage::create);
+  EXPECT_EQ(rc, ResultCode::kOk);
+  // Since nothing is written into the database file, the page count should
+  // still be 0
+  page_count = pager.SqlitePagerPageCount();
+  EXPECT_EQ(page_count, 0);
+}
+
+TEST(PagerJournalTest, HandlesJournalFilePlayback) {
+  // Arrange
+  std::string filename = "test_HandlesJournalFilePlayback.db";
+  std::string journal_filename = "test_HandlesJournalFilePlayback.db-journal";
+  std::remove(filename.c_str());
+  std::remove(journal_filename.c_str());
+  ResultCode rc;
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+  BasePage *p_base_page = nullptr;
+  rc = pager.SqlitePagerGet(1, &p_base_page, SampleMemPage::create);
+  EXPECT_EQ(rc, ResultCode::kOk);
+  rc = pager.SqlitePagerUnref(p_base_page);
+  EXPECT_EQ(rc, ResultCode::kOk);
+  rc = pager.SqlitePagerGet(1, &p_base_page, SampleMemPage::create);
+  EXPECT_EQ(rc, ResultCode::kOk);
+}
+
+// Write data to multiple pages sequentially and ensure the commit operation
+// persists all data.
+TEST(PagerJournalTest, SequentialWritesAndCommit) {
+  std::string filename = "test_SequentialWritesAndCommit.db";
+  std::remove(filename.c_str());
+  ResultCode rc;
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+  BasePage *p_base_page = nullptr;
+
+  // Write to pages 1 to 3
+  for (int i = 1; i <= 3; ++i) {
+    rc = pager.SqlitePagerGet(i, &p_base_page, SampleMemPage::create);
+    EXPECT_EQ(rc, ResultCode::kOk);
+    rc = pager.SqlitePagerWrite(p_base_page);
+    EXPECT_EQ(rc, ResultCode::kOk);
+
+    // Fill page with data
+    std::vector<std::byte> data(1024, std::byte(i));
+    std::memcpy(p_base_page->p_image_->data(), data.data(), data.size());
+  }
+
+  // Commit transaction
+  rc = pager.SqlitePagerCommit();
+  EXPECT_EQ(rc, ResultCode::kOk);
+
+  // Verify data persistence
+  for (int i = 1; i <= 3; ++i) {
+    rc = pager.SqlitePagerGet(i, &p_base_page, SampleMemPage::create);
+    EXPECT_EQ(rc, ResultCode::kOk);
+
+    std::vector<std::byte> expected_data(1024, std::byte(i));
+    EXPECT_EQ(std::memcmp(p_base_page->p_image_->data(), expected_data.data(),
+                          expected_data.size()),
+              0);
+  }
+}
+
+// Ensure that changes made to a page are retained in memory but not persisted
+// until committed.
+TEST(PagerWriteTest, WriteWithoutCommit) {
+  std::string filename = "test_WriteWithoutCommit.db";
+  std::remove(filename.c_str());
+  Pager pager(filename, 10, EvictionPolicy::FIRST_NON_DIRTY);
+
+  BasePage *p_page = nullptr;
+
+  // Load and modify a page
+  ResultCode rc = pager.SqlitePagerGet(1, &p_page, SampleMemPage::create);
+  EXPECT_EQ(rc, ResultCode::kOk);
+  rc = pager.SqlitePagerWrite(p_page);
+  EXPECT_EQ(rc, ResultCode::kOk);
+
+  // Fill page with data
+  std::vector<std::byte> data(1024, std::byte(42));
+  std::memcpy(p_page->p_image_->data(), data.data(), data.size());
+
+  // Verify changes in memory
+  std::vector<std::byte> expected_data(1024, std::byte(42));
+  EXPECT_EQ(std::memcmp(p_page->p_image_->data(), expected_data.data(),
+                        expected_data.size()),
+            0);
+
+  // Commit changes and verify persistence
+  rc = pager.SqlitePagerCommit();
+  EXPECT_EQ(rc, ResultCode::kOk);
+}
