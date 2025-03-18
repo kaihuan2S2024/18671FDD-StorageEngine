@@ -3,6 +3,7 @@
 #include "os/test/os_test.cc"
 #include "pager/test/pager_test.cc"
 #include "utility/test/sql_rc_test.cc"
+#include "pager/test/pager_concurrency_test.cc"
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);

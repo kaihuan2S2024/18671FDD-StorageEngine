@@ -15,12 +15,8 @@ CMake Warning (dev) at pager/CMakeLists.txt:15 (find_package):
 
 This warning is for project developers.  Use -Wno-dev to suppress it.
 
--- Found Boost: /opt/homebrew/lib/cmake/Boost-1.87.0/BoostConfig.cmake (found suitable version "1.87.0", minimum required is "1.84")
+-- Found Boost: /opt/homebrew/lib/cmake/Boost-1.87.0/BoostConfig.cmake (found suitable version "1.87.0", minimum required is "1.83")
 -- Boost version: 1.87.0
--- Found Python: /opt/homebrew/Frameworks/Python.framework/Versions/3.13/bin/python3.13 (found version "3.13.1") found components: Interpreter
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD
--- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
--- Found Threads: TRUE
--- Configuring done (3.1s)
+-- Configuring done (0.4s)
 -- Generating done (0.0s)
 -- Build files have been written to: /Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug

@@ -12,7 +12,7 @@ set(HEADERS
 set(Boost_USE_STATIC_LIBS OFF) # Only if needed by the inner library
 set(Boost_USE_MULTITHREADED ON) # Only if needed by the inner library
 
-find_package(Boost 1.84 REQUIRED)
+find_package(Boost 1.83 REQUIRED)
 message(STATUS "Boost version: ${Boost_VERSION}")
 
 

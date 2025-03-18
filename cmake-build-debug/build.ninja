@@ -542,6 +542,40 @@ build pager/test/pager_test pager/test/pager_test[1]_tests.cmake | ${cmake_ninja
   TARGET_FILE = pager/test/pager_test
   TARGET_PDB = pager_test.dbg
 
+# =============================================================================
+# Object build statements for EXECUTABLE target pager_concurrency_test
+
+
+#############################################
+# Order-only phony target for pager_concurrency_test
+
+build cmake_object_order_depends_target_pager_concurrency_test: phony || cmake_object_order_depends_target_OS cmake_object_order_depends_target_Pager cmake_object_order_depends_target_Utility cmake_object_order_depends_target_gtest cmake_object_order_depends_target_gtest_main
+
+build pager/test/CMakeFiles/pager_concurrency_test.dir/pager_concurrency_test.cc.o: CXX_COMPILER__pager_concurrency_test_unscanned_Debug /Users/kai/Documents/CMU/2025$ Spring/18671$ Foundations$ of$ Database$ Design/StorageEngine/pager/test/pager_concurrency_test.cc || cmake_object_order_depends_target_pager_concurrency_test
+  DEP_FILE = pager/test/CMakeFiles/pager_concurrency_test.dir/pager_concurrency_test.cc.o.d
+  FLAGS = -fprofile-instr-generate -fcoverage-mapping -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics
+  INCLUDES = -I/opt/homebrew/include -I"/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/pager/include" -I"/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/pager/../utility/include" -I"/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/pager/../os/include" -isystem "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/_deps/googletest-src/googletest/include" -isystem "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/_deps/googletest-src/googletest"
+  OBJECT_DIR = pager/test/CMakeFiles/pager_concurrency_test.dir
+  OBJECT_FILE_DIR = pager/test/CMakeFiles/pager_concurrency_test.dir
+
+
+# =============================================================================
+# Link build statements for EXECUTABLE target pager_concurrency_test
+
+
+#############################################
+# Link the executable pager/test/pager_concurrency_test
+
+build pager/test/pager_concurrency_test pager/test/pager_concurrency_test[1]_tests.cmake | ${cmake_ninja_workdir}pager/test/pager_concurrency_test[1]_tests.cmake: CXX_EXECUTABLE_LINKER__pager_concurrency_test_Debug pager/test/CMakeFiles/pager_concurrency_test.dir/pager_concurrency_test.cc.o | pager/libPager.a lib/libgtest_main.a os/libOS.a utility/libUtility.a lib/libgtest.a || lib/libgtest.a lib/libgtest_main.a os/libOS.a pager/libPager.a utility/libUtility.a
+  FLAGS = -fprofile-instr-generate -fcoverage-mapping -g -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk
+  LINK_LIBRARIES = pager/libPager.a  lib/libgtest_main.a  os/libOS.a  utility/libUtility.a  lib/libgtest.a
+  OBJECT_DIR = pager/test/CMakeFiles/pager_concurrency_test.dir
+  POST_BUILD = cd "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test" && /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -D TEST_TARGET=pager_concurrency_test -D "TEST_EXECUTABLE=/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test/pager_concurrency_test" -D TEST_EXECUTOR= -D "TEST_WORKING_DIR=/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test" -D TEST_EXTRA_ARGS= -D TEST_PROPERTIES= -D TEST_PREFIX= -D TEST_SUFFIX= -D TEST_FILTER= -D NO_PRETTY_TYPES=FALSE -D NO_PRETTY_VALUES=FALSE -D TEST_LIST=pager_concurrency_test_TESTS -D "CTEST_FILE=/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test/pager_concurrency_test[1]_tests.cmake" -D TEST_DISCOVERY_TIMEOUT=5 -D TEST_XML_OUTPUT_DIR= -P /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.30/Modules/GoogleTestAddTests.cmake
+  PRE_LINK = :
+  RESTAT = 1
+  TARGET_FILE = pager/test/pager_concurrency_test
+  TARGET_PDB = pager_concurrency_test.dbg
+
 
 #############################################
 # Utility command for edit_cache
@@ -1639,6 +1673,8 @@ build os_test: phony os/test/os_test
 
 build over_free_test: phony derived_page/test/over_free_test
 
+build pager_concurrency_test: phony pager/test/pager_concurrency_test
+
 build pager_test: phony pager/test/pager_test
 
 build sql_rc_test: phony utility/test/sql_rc_test
@@ -1728,7 +1764,7 @@ build pager/all: phony pager/libPager.a pager/test/all
 #############################################
 # Folder: /Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test
 
-build pager/test/all: phony pager/test/pager_test
+build pager/test/all: phony pager/test/pager_test pager/test/pager_concurrency_test
 
 # =============================================================================
 

@@ -207,6 +207,9 @@ ResultCode Pager::SqlitePagerGet(
   } else {
     // if the page is in the cache
     num_pages_hit_++;
+    if(p_page->p_header_ == nullptr){
+      return ResultCode::kError;
+    }
     SqlitePagerRefPrivate(p_page);
   }
   updateLRU(p_page);  // Update LRU for accessed page
@@ -244,6 +247,9 @@ ResultCode Pager::SqlitePagerLookup(PageNumber page_number,
 
   *pp_page = SqlitePagerPrivateCacheLookup(page_number);
 
+  if(*pp_page == nullptr){
+    return ResultCode::kError;
+  }
   // If the page is in the cache, increase its reference count
   if (pp_page) {
     SqlitePagerRefPrivate(*pp_page);
@@ -463,7 +469,7 @@ PageNumber Pager::SqlitePagerPageNumber(BasePage *p_page) {
  * WRITE LOCK.)
  */
 ResultCode Pager::SqlitePagerBegin(BasePage *p_page) {
-  ResultCode rc = ResultCode::kOk;
+  ResultCode rc = ResultCode::kInit;
 
   // TODO: A2 -> Ensure the page has a positive reference count.
   // hint : you can use a field in the page header that holds this info
@@ -540,7 +546,7 @@ ResultCode Pager::SqlitePagerBegin(BasePage *p_page) {
  * K_SQLITE_READ_LOCK.
  */
 ResultCode Pager::SqlitePagerCommit() {
-  ResultCode rc;
+  ResultCode rc = ResultCode::kInit;
 
   // Check for any critical errors; if found, roll back the transaction.
   if (err_mask_.count(SqlitePagerError::K_PAGER_ERROR_FULL)) {
@@ -560,6 +566,10 @@ ResultCode Pager::SqlitePagerCommit() {
    */
   // Your code here:
 
+  // Return kError, to avoid exiting.
+  if (!is_journal_open_) {
+    return ResultCode::kError;
+  }
   assert(is_journal_open_);
 
   // If no dirty pages, release the write lock early and finish.
@@ -616,7 +626,7 @@ ResultCode Pager::SqlitePagerCommit() {
  * database state.
  */
 ResultCode Pager::SqlitePagerRollback() {
-  ResultCode rc;
+  ResultCode rc = ResultCode::kInit;
   if (err_mask_.size() >
       err_mask_.count(SqlitePagerError::K_PAGER_ERROR_FULL)) {
     // have pager error_full, make pager cache small to test this branch

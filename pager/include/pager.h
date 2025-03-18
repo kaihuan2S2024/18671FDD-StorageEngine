@@ -257,6 +257,8 @@ class BasePage {
   BasePage *GetFirstNonDirtyPage();
   virtual void DestroyExtra() = 0;
 
+  [[nodiscard]] PageHeader *GetPageHeader() const { return p_header_.get(); }
+
   // This header space will still exist for any child classes, yet the child
   // classes will not be able to access the space (information hidding)
  private:
