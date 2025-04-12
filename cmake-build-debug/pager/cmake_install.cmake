@@ -1,4 +1,4 @@
-# Install script for directory: /Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/pager
+# Install script for directory: /Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/B-Tree Layer/StorageEngine/pager
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)
@@ -39,6 +39,6 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for the subdirectory.
-  include("/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test/cmake_install.cmake")
+  include("/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/B-Tree Layer/StorageEngine/cmake-build-debug/pager/test/cmake_install.cmake")
 endif()
 

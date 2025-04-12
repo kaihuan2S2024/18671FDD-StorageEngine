@@ -1,51 +1,28 @@
 # ninja log v6
-2	625	1741903634043652923	utility/CMakeFiles/Utility.dir/src/utility.cc.o	a0e17dc4e0e69ac9
-4	1430	1741903634045611377	derived_page/CMakeFiles/DerivedPage.dir/src/first_page.cc.o	83ba2613b311df37
-2	1081	1741903634043900923	os/CMakeFiles/OS.dir/src/os_lock.cc.o	48bbe6bbfc0d7ee9
-5	1772	1741903634046391667	derived_page/CMakeFiles/DerivedPage.dir/src/node_page.cc.o	d423cfba6d3681f0
-5765	6812	1741903640853074454	all_tests	a609f0169245dc15
-1430	2086	1741903635472077403	CMakeFiles/storageEngine.dir/main.cc.o	d712c9251bea0837
-772	872	1741903634814152147	utility/libUtility.a	24868785e61a5c6a
-1091	1125	1741903635133085505	os/libOS.a	fe3eda22769f69b
-5729	6148	1741903640188597878	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/derived_page/test/over_free_test[1]_tests.cmake	2959911c1fb0f906
-2	1521	1741903634044343005	pager/CMakeFiles/Pager.dir/src/pager_cache.cc.o	f642e478fd100de7
-2	772	1741903634043390382	utility/CMakeFiles/Utility.dir/src/sql_rc.cc.o	49e38243df6c7dbc
-5729	6471	1741903640512282809	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/derived_page/test/first_page_test[1]_tests.cmake	1b719f0496e25292
-2062	2100	1741903636103977507	pager/libPager.a	dbaa7dd310932687
-5685	5731	1741903639726698077	lib/libgmock.a	6e71069340886522
-872	2777	1741903634914055433	btree/CMakeFiles/Btree.dir/src/btree.cc.o	c4194671b7c12d3d
-5729	6148	1741903640188597878	derived_page/test/over_free_test	2959911c1fb0f906
-1534	3057	1741903635576312138	utility/test/CMakeFiles/sql_rc_test.dir/sql_rc_test.cc.o	98069938b684f2fa
-1883	3949	1741903635924539934	os/test/CMakeFiles/os_test.dir/os_test.cc.o	ab1d2790f6a482cc
-3	1534	1741903634044931587	pager/CMakeFiles/Pager.dir/src/pager_journal.cc.o	5b2c976af2abc738
-2312	3931	1741903636354270304	_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o	33ca517efd98edf9
-2086	4200	1741903636127534957	derived_page/test/CMakeFiles/first_page_test.dir/first_page_test.cc.o	896513983cd1433b
-2	2062	1741903634044083005	pager/CMakeFiles/Pager.dir/src/pager.cc.o	5e73d75d7f259fa2
-2100	4149	1741903636142166967	derived_page/test/CMakeFiles/over_free_test.dir/over_free_test.cc.o	8e6f13d43db30ae8
-1081	4217	1741903635123292567	_deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o	fc999988bfade78d
-1522	4496	1741903635563529582	CMakeFiles/all_tests.dir/all_tests.cc.o	f4dad37a07dd628
-5628	5684	1741903639670268947	lib/libgtest.a	f3e2e0260090b16a
-5708	6002	1741903640032395213	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/os/test/os_test[1]_tests.cmake	207f93345bb473b2
-5685	5708	1741903639726977492	lib/libgtest_main.a	173d721be4f94a5c
-919	1383	1742245494519879606	pager/test/pager_test	8c5d5e737d14283b
-3	5628	1741903634045100878	_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o	604b14b7066be1ab
-5765	6812	1741903640853074454	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/all_tests[1]_tests.cmake	a609f0169245dc15
-1125	2312	1741903635167340848	_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o	bf659bbbe4383b1c
-5684	5728	1741903639726324077	derived_page/libDerivedPage.a	ecebca3e021f2caf
-5708	6002	1741903640032395213	os/test/os_test	207f93345bb473b2
-5731	5756	1741903639773112102	lib/libgmock_main.a	9b9bd9e61e263a61
-5708	6002	1741903640032395213	os/test/os_test[1]_tests.cmake	207f93345bb473b2
-5729	6148	1741903640188597878	derived_page/test/over_free_test[1]_tests.cmake	2959911c1fb0f906
-5708	6309	1741903640349981866	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/utility/test/sql_rc_test[1]_tests.cmake	5dcca70adc6a76fa
-5763	5818	1741903639805144950	storageEngine	96d4b681875389c7
-5729	6471	1741903640512282809	derived_page/test/first_page_test	1b719f0496e25292
-5708	6309	1741903640349981866	utility/test/sql_rc_test	5dcca70adc6a76fa
-919	1383	1742245494519879606	pager/test/pager_test[1]_tests.cmake	8c5d5e737d14283b
-2	1091	1741903634043785423	os/CMakeFiles/OS.dir/src/os.cc.o	5a7598c812682859
-5729	6471	1741903640512282809	derived_page/test/first_page_test[1]_tests.cmake	1b719f0496e25292
-5765	6812	1741903640853074454	all_tests[1]_tests.cmake	a609f0169245dc15
-5708	6309	1741903640349981866	utility/test/sql_rc_test[1]_tests.cmake	5dcca70adc6a76fa
-14	919	1742245493150957044	pager/test/CMakeFiles/pager_test.dir/pager_test.cc.o	606155e4cc2fc310
-5728	5763	1741903639770261275	btree/libBtree.a	c6cd2d143e985579
-628	1882	1741903634669935831	derived_page/CMakeFiles/DerivedPage.dir/src/over_free_page.cc.o	ab4a1404b07bd27c
-919	1383	1742245494519879606	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/cmake-build-debug/pager/test/pager_test[1]_tests.cmake	8c5d5e737d14283b
+2	327	1743548474647417865	utility/CMakeFiles/Utility.dir/src/utility.cc.o	6ed8b6ca85b1288f
+1	415	1743548474646960698	utility/CMakeFiles/Utility.dir/src/sql_rc.cc.o	21e27748332acbfc
+415	447	1743548475060491839	utility/libUtility.a	24868785e61a5c6a
+2	538	1743548474647554703	os/CMakeFiles/OS.dir/src/os.cc.o	bd66c682a1ba1782
+2	542	1743548474647678490	os/CMakeFiles/OS.dir/src/os_lock.cc.o	4976d3b17eba2be0
+543	573	1743548475188374130	os/libOS.a	fe3eda22769f69b
+3	676	1743548474648741795	derived_page/CMakeFiles/DerivedPage.dir/src/first_page.cc.o	5e1ae717e2848d46
+3	693	1743548474648364512	pager/CMakeFiles/Pager.dir/src/pager_cache.cc.o	1b02cabca9c5c45c
+3	729	1743548474648487841	pager/CMakeFiles/Pager.dir/src/pager_journal.cc.o	dae947c87add550c
+3	786	1743548474648893809	derived_page/CMakeFiles/DerivedPage.dir/src/node_page.cc.o	34b7eb7ad277a31c
+3	882	1743548474648180478	pager/CMakeFiles/Pager.dir/src/pager.cc.o	18a363639f2c6cf7
+328	922	1743548474973585669	derived_page/CMakeFiles/DerivedPage.dir/src/over_free_page.cc.o	fbaeff569f6e5051
+883	928	1743548475528616341	pager/libPager.a	dbaa7dd310932687
+693	1132	1743548475339037585	_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o	1ac4ec40cf90d12e
+447	1167	1743548475092606936	btree/CMakeFiles/Btree.dir/src/btree.cc.o	f6a18a0c222a0b69
+573	1190	1743548475219368763	btree/CMakeFiles/Btree.dir/src/btree_bt_cursor_private.cc.o	736f475e1d660506
+538	1211	1743548475184016558	btree/CMakeFiles/Btree.dir/src/btree_bt_cursor_public.cc.o	d362fdc19be26309
+677	1304	1743548475322635914	btree/CMakeFiles/Btree.dir/src/btree_balance.cc.o	b62e6526cc191891
+729	1631	1743548475375291706	CMakeFiles/all_tests.dir/all_tests.cc.o	3048077cc37d7729
+3	1899	1743548474648604165	_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o	f37e356fea3df55e
+1899	1933	1743548476545808126	lib/libgtest.a	f3e2e0260090b16a
+1933	1946	1743548476579447061	lib/libgtest_main.a	173d721be4f94a5c
+1933	1955	1743548476579301062	derived_page/libDerivedPage.a	ecebca3e021f2caf
+1955	1989	1743548476601802019	btree/libBtree.a	7afadaaaf1271cf6
+1989	2332	1743548476978423339	all_tests	b879677b90af6852
+1989	2332	1743548476978423339	all_tests[1]_tests.cmake	b879677b90af6852
+1989	2332	1743548476978423339	/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/B-Tree Layer/StorageEngine/cmake-build-debug/all_tests[1]_tests.cmake	b879677b90af6852

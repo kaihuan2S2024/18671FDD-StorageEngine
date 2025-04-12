@@ -207,9 +207,6 @@ ResultCode Pager::SqlitePagerGet(
   } else {
     // if the page is in the cache
     num_pages_hit_++;
-    if(p_page->p_header_ == nullptr){
-      return ResultCode::kError;
-    }
     SqlitePagerRefPrivate(p_page);
   }
   updateLRU(p_page);  // Update LRU for accessed page
@@ -247,9 +244,6 @@ ResultCode Pager::SqlitePagerLookup(PageNumber page_number,
 
   *pp_page = SqlitePagerPrivateCacheLookup(page_number);
 
-  if(*pp_page == nullptr){
-    return ResultCode::kError;
-  }
   // If the page is in the cache, increase its reference count
   if (pp_page) {
     SqlitePagerRefPrivate(*pp_page);
@@ -314,18 +308,12 @@ ResultCode Pager::SqlitePagerUnref(BasePage *p_page) {
  * is_journal_need_sync_ is set if syncing is needed.
  */
 ResultCode Pager::SqlitePagerWrite(BasePage *p_page) {
-  // TODO: A2 -> Verify that no error conditions prevent writing (ifs below)
-  if (false)  // TODO: Replace "false" with the condition to check if the error
-              // mask is not empty.
-    return ResultCode::kError;
-  if (false)  // TODO: Replace "false" with the condition to check if the pager
-              // is in read-only mode.
-    return ResultCode::kPerm;
-
-  /*
-   * Mark the page as dirty. If the page has already been written
-   * to the journal then we can return right away.
-   */
+  // if there is any other error
+  if (!err_mask_.empty()) return ResultCode::kError;
+  if (is_read_only_) return ResultCode::kPerm;
+  /* Mark the page as dirty.  If the page has already been written
+  ** to the journal then we can return right away.
+  */
   p_page->p_header_->is_dirty_ = true;
   updateLRU(p_page);  // Update LRU when page is modified
 
@@ -349,42 +337,32 @@ ResultCode Pager::SqlitePagerWrite(BasePage *p_page) {
   // to write it
   if (!p_page->p_header_->is_in_journal_ &&
       p_page->p_header_->page_number_ <= num_database_original_size_) {
-    // TODO: A2 -> Write the header and image of the page to the journal file.
-    // hint: you can use the OsWrite function of the journal file descriptor to
-    // write the page header and image
-
-    // TODO: write header
+    // if the page is not in journal
+    rc = journal_fd_->OsWrite(p_page->p_header_->PageNumberVector());
     if (rc == ResultCode::kOk) {
-      // TODO: write image
+      rc = journal_fd_->OsWrite(*p_page->p_image_);
     }
-
     if (rc != ResultCode::kOk) {
-      SqlitePagerRollback();  // Roll back if the journal is full or there’s an
-                              // error.
-      // K_PAGER_ERROR_FULL means that the journal is full
+      SqlitePagerRollback();
+      // means that the journal is full
       err_mask_.insert(SqlitePagerError::K_PAGER_ERROR_FULL);
       return rc;
     }
-
-    // TODO: A2 -> Update journal flags and mark this page as in the journal.
-    // 1. update the page_journal_bit_map_ to indicate that this page is in the
-    // journal
-    // 2. update the is_in_journal_ flag in the page header
-
+    page_journal_bit_map_[p_page->p_header_->page_number_] = true;
     is_journal_need_sync_ = is_journal_sync_allowed_;
-
+    p_page->p_header_->is_in_journal_ = true;
     if (is_checkpoint_journal_use_) {
       page_checkpoint_journal_bit_map_[p_page->p_header_->page_number_] = true;
       p_page->p_header_->is_in_checkpoint_ = true;
     }
   }
 
-  // TODO: A2 -> Write the header and image of the page to checkpoint journal
+  // write to checkpoint journal if not exists
   if (is_checkpoint_journal_use_ && !p_page->p_header_->is_in_checkpoint_ &&
       p_page->p_header_->page_number_ <= num_database_original_size_) {
-    // TODO: write header
+    rc = checkpoint_journal_fd_->OsWrite(p_page->p_header_->PageNumberVector());
     if (rc == ResultCode::kOk) {
-      // TODO: write image
+      rc = checkpoint_journal_fd_->OsWrite(p_page->ImageVector());
     }
     if (rc != ResultCode::kOk) {
       SqlitePagerRollback();
@@ -424,7 +402,8 @@ bool Pager::SqlitePagerIsWritable(BasePage *p_page) {
 u32 Pager::SqlitePagerPageCount() {
   u32 db_file_size = 0;  // the database file size in bytes
   if (num_database_size_ >= 0) {
-    return num_database_size_;
+    return num_database_size_;  // TODO: Check why it's ok to return 0 when
+                                // num_database_size_ == 0
   }
   // The variable db_file_size is passed by reference
   // If the result code is kOK, then db_file_size will be the size of the
@@ -465,38 +444,33 @@ PageNumber Pager::SqlitePagerPageNumber(BasePage *p_page) {
  * 4. SqlitePagerUnref() is called on every outstanding page
  *
  * (Note that SqlitePagerWrite() can only be called on an outstanding page which
- * means that the pager must be in READ LOCK state before it transitions to
- * WRITE LOCK.)
+ * means that the pager must be in SQLITE_READLOCK before it transitions to
+ * SQLITE_WRITELOCK.)
  */
 ResultCode Pager::SqlitePagerBegin(BasePage *p_page) {
-  ResultCode rc = ResultCode::kInit;
-
-  // TODO: A2 -> Ensure the page has a positive reference count.
-  // hint : you can use a field in the page header that holds this info
-  assert(true);  // TODO: Replace "true" with the condition to check if the page
-                 // has a positive reference count.
-
-  // TODO: A2 -> Ensure the pager is not in an unlocked state before proceeding.
-  // hint : you can use the field in the pager that holds this info
-  assert(true);  // TODO: Replace "true" with the condition to check if the
-                 // pager is not in an unlocked state.
-
-  // TODO: A2 -> Ensure the pager is in a read lock state before proceeding.
-  if (true) {  // TODO: Replace "true" with the condition to check if the pager
-               // is in a read lock.
+  ResultCode rc = ResultCode::kOk;
+  assert(p_page->p_header_->num_ref_ > 0);
+  assert(lock_state_ != SqliteLockState::K_SQLITE_UNLOCK);
+  if (lock_state_ == SqliteLockState::K_SQLITE_READ_LOCK) {
     // if the pager is in read lock, it means that the journal is empty, we
-    // should create a new journal but first we need to ensure the journal is
-    // empty at the start of a new write transaction.
-    assert(true);  // TODO: Replace "true" with the condition to check if the
-                   // journal is empty
-
+    // should create new one
+    assert(page_journal_bit_map_.empty());
     rc = fd_->OsWriteLock();
     if (rc != ResultCode::kOk) {
       return rc;
     }
 
+    // SqlitePagerPageCount(); // in theory, we cannot have a -1 here
+    //  A bad_alloc occurs when calling boost::dynamic_bitset<>(-1)
+    //  it shouldn't be -1 since the pager
     page_journal_bit_map_ = boost::dynamic_bitset<>(
         std::max(kBitMapPlaceHolder, kBitMapPlaceHolder + num_database_size_));
+
+    // In the Sqlite source code, there is an if statement here
+    // that checks if calling malloc to allocate memory for
+    // page_journal_bit_map_ returns a nullptr.
+    // If such, the function returns SQLITE_NOMEM
+    // Since we are not using malloc here, the if statement is omitted.
 
     rc = journal_fd_->OsOpenExclusive(0);
     if (rc != ResultCode::kOk) {
@@ -504,7 +478,6 @@ ResultCode Pager::SqlitePagerBegin(BasePage *p_page) {
       fd_->OsReadLock();
       return ResultCode::kCantOpen;
     }
-
     is_journal_open_ = true;
     is_journal_need_sync_ = false;
     is_dirty_ = false;
@@ -512,19 +485,21 @@ ResultCode Pager::SqlitePagerBegin(BasePage *p_page) {
     SqlitePagerPageCount();
     num_database_original_size_ = num_database_size_;
 
-    /* TODO: A2 -> Write initial journal entries.
-     * Attempt to write these two variables into the journal file
-     * 1. kAJournalMagic: An 8 byte magic string that identifies the journal
-     * file as a proper journal file.
-     * 2. num_database_size_: A 4 byte integer representing the number of pages
-     * in the database file.
-     *
-     * You can assume that the journal file is empty (begin as empty or cleared)
-     * before we start writing to the journal
-     */
-    // your code here to write variable 1
+    // Attempt to write these two variables into the journal file
+    // 1. kAJournalMagic: An 8 byte magic string that identifies the journal
+    // file as a proper journal file
+    // 2. num_database_size_: A 4 byte integer representing the number of pages
+    // in the database file
+
+    // we must assume that the journal file is empty (begin as empty or cleared)
+    // before we start writing to the journal
+    rc = journal_fd_->OsWrite(kAJournalMagic);
     if (rc == ResultCode::kOk) {
-      // your code here to write variable 2
+      // write num of database into the journal file
+      std::vector<std::byte> db_size_vec(sizeof(num_database_size_));
+      std::memcpy(db_size_vec.data(), &num_database_size_,
+                  sizeof(num_database_size_));
+      rc = journal_fd_->OsWrite(db_size_vec);
     }
 
     if (rc != ResultCode::kOk) {
@@ -546,38 +521,24 @@ ResultCode Pager::SqlitePagerBegin(BasePage *p_page) {
  * K_SQLITE_READ_LOCK.
  */
 ResultCode Pager::SqlitePagerCommit() {
-  ResultCode rc = ResultCode::kInit;
+  ResultCode rc;
 
-  // Check for any critical errors; if found, roll back the transaction.
   if (err_mask_.count(SqlitePagerError::K_PAGER_ERROR_FULL)) {
     rc = SqlitePagerRollback();
     if (rc == ResultCode::kOk) rc = ResultCode::kFull;
     return rc;
   }
-
   if (!err_mask_.empty()) {
     rc = SqlitePagerPrivateRetrieveError();
     return rc;
   }
-
-  /* TODO: A2 -> Only proceed if in write lock.
-   * In other words, if not in write lock, return the error code.
-   * hint: you can use a field in the pager that holds this info
-   */
-  // Your code here:
-
-  // Return kError, to avoid exiting.
-  if (!is_journal_open_) {
+  if (lock_state_ != SqliteLockState::K_SQLITE_WRITE_LOCK) {
     return ResultCode::kError;
   }
   assert(is_journal_open_);
-
-  // If no dirty pages, release the write lock early and finish.
   if (is_dirty_ == 0) {
-    /*
-     * Exit early (without doing the time-consuming sqliteOsSync() calls)
-     * if there have been no changes to the database file.
-     */
+    /* Exit early (without doing the time-consuming sqliteOsSync() calls)
+    ** if there have been no changes to the database file. */
     rc = SqlitePagerPrivateUnWriteLock();
     num_database_size_ = -1;
     return rc;
@@ -587,27 +548,16 @@ ResultCode Pager::SqlitePagerCommit() {
   if (is_journal_need_sync_ && journal_fd_->OsSync() != ResultCode::kOk)
     SqlitePagerPrivateCommitAbort();
 
-  /* TODO: A2 -> Iterate through the linked list of page headers and write the
-   * page image associated with each page header.
-   *
-   * For each BasePage p_i, you need to:
-   * 1. Check if the page is dirty, if not, skip to the next page
-   *
-   * 2. Seek(use OS layer's function) to the correct position (offset) in the
-   * database file
-   *    hint: the offset = (page number - 1) * Page Size
-   *
-   * 3. If the seek operation fails, call SqlitePagerPrivateCommitAbort() and
-   * return the result code
-   *
-   * 4. Write(use fd_->OS) the page image to the database file
-   *    hint: where is the page image stored? check BasePage class
-   *
-   * 5. if the write operation fails, call SqlitePagerPrivateCommitAbort() and
-   * return its result code
-   */
-  // Your code here
-
+  // Iterate through the linked list of page headers and write the page image
+  // associated with each page header into the disk
+  for (BasePage *cur_page = p_all_page_first_; cur_page != nullptr;
+       cur_page = cur_page->p_header_->p_next_all_) {
+    if (cur_page->p_header_->is_dirty_ == 0) continue;
+    rc = fd_->OsSeek((cur_page->p_header_->page_number_ - 1) * kPageSize);
+    if (rc != ResultCode::kOk) SqlitePagerPrivateCommitAbort();
+    rc = fd_->OsWrite(cur_page->ImageVector());
+    if (rc != ResultCode::kOk) SqlitePagerPrivateCommitAbort();
+  }
   if (is_journal_sync_allowed_ && fd_->OsSync() != ResultCode::kOk)
     SqlitePagerPrivateCommitAbort();
   rc = SqlitePagerPrivateUnWriteLock();
@@ -620,20 +570,20 @@ ResultCode Pager::SqlitePagerCommit() {
  * the original pages from the journal file and writing them back to the
  * database file.
  *
- * Journal is called to handle the actual playback of the journal entries.
+ * SqlitePagerPrivatePlayback() is called to handle the actual playback of the
+ * journal entries.
  *
  * The page number is extracted, and data is copied back to restore the original
  * database state.
  */
 ResultCode Pager::SqlitePagerRollback() {
-  ResultCode rc = ResultCode::kInit;
+  ResultCode rc;
   if (err_mask_.size() >
       err_mask_.count(SqlitePagerError::K_PAGER_ERROR_FULL)) {
     // have pager error_full, make pager cache small to test this branch
     if (lock_state_ == SqliteLockState::K_SQLITE_WRITE_LOCK) {
       // pager is in write lock
-      // TODO: A2 -> apply the transaction journal to restore pages
-      // hint: there is a function to restore pages from journal
+      SqlitePagerPrivatePlayback();
     }
     return SqlitePagerPrivateRetrieveError();
   }
@@ -641,20 +591,15 @@ ResultCode Pager::SqlitePagerRollback() {
     // when pager is not in write lock, do nothing
     return ResultCode::kOk;
   }
-
-  /*
-   * TODO: A2 -> Apply the journal to restore pages and reset the database size.
-   * There are a few two steps to do here:
-   *  1. apply the transaction journal to restore pages
-   *    hint: there is a function to restore pages from journal
-   *  2. if the restore operation fails (means the journal is corrupted), update
-   * the error mask and return the corrupt error code
-   *
-   *  3. reset the database size to -1 (this means that the number of pages in
-   * the file is again unknown, should be recalculated again)
-   */
-  // your code here
-
+  // play back one page
+  rc = SqlitePagerPrivatePlayback();
+  if (rc != ResultCode::kOk) {
+    rc = ResultCode::kCorrupt;
+    err_mask_.insert(SqlitePagerError::K_PAGER_ERROR_CORRUPT);
+  }
+  // this means that the number of pages in the file is again unknown, should be
+  // recalculated again
+  num_database_size_ = -1;
   return rc;
 }
 
@@ -689,6 +634,7 @@ void Pager::SqlitePagerRefPrivate(BasePage *p_page) {
   p_page->p_header_->num_ref_++;
 }
 
+// TODO-test: reset the page
 void Pager::SqlitePagerPrivatePagerReset() {
   if (eviction_policy_ == EvictionPolicy::FIRST_NON_DIRTY) {
     page_hash_table_->clear();
@@ -724,6 +670,7 @@ ResultCode Pager::SqlitePagerPrivateRetrieveError() const {
   return rc;
 }
 
+// TODO-test
 // abort the transaction
 ResultCode Pager::SqlitePagerPrivateCommitAbort() {
   ResultCode rc = SqlitePagerRollback();
@@ -783,7 +730,7 @@ void PageHeader::PageRef() {
 }
 
 std::vector<std::byte> PageHeader::PageNumberVector() {
-  // Check if this is the correct way to replace the original
+  // TODO: Check if this is the correct way to replace the original
   // reinterpret_cast solution
   std::vector<std::byte> page_number_vector(sizeof(page_number_));
   std::memcpy(page_number_vector.data(), &page_number_, sizeof(page_number_));

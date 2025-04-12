@@ -35,6 +35,16 @@ Btree &Btree::RebuildInstance(const std::string &filename) {
   return *instance_;
 }
 
+Btree::Btree(std::string filename, int cache_size)
+    : filename_(filename),
+      has_writable_bt_cursor_(false),
+      pager_(std::make_unique<Pager>(filename_,
+                                     cache_size < 10 ? 10 : cache_size)),
+      read_only_(pager_->SqlitePagerIsReadOnly()),
+      in_trans_(false),
+      in_ckpt_(false),
+      p_first_page_(nullptr) {}
+
 // --------------------- Btree Private Functions ---------------------
 
 ResultCode Btree::NewDatabase() {

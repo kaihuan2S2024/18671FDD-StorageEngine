@@ -1,6 +1,9 @@
 
 set(SOURCES
         src/btree.cc
+        src/btree_bt_cursor_public.cc
+        src/btree_bt_cursor_private.cc
+        src/btree_balance.cc
 )
 
 set(HEADERS

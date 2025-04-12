@@ -1,4 +1,4 @@
-# Install script for directory: /Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/StorageEngine/utility/test
+# Install script for directory: /Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/B-Tree Layer/StorageEngine/utility/test
 
 # Set the install prefix
 if(NOT DEFINED CMAKE_INSTALL_PREFIX)

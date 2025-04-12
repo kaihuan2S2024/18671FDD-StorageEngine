@@ -1,0 +1,215 @@
+{
+	"archive" : {},
+	"artifacts" : 
+	[
+		{
+			"path" : "derived_page/libDerivedPage.a"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"target_link_libraries",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"derived_page/CMakeLists.txt"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 15,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 16,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 17,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 20,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 23,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : " -fprofile-instr-generate -fcoverage-mapping -g -std=gnu++17 -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX14.4.sdk -fcolor-diagnostics"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 5,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/derived_page/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/derived_page/../utility/include"
+				},
+				{
+					"backtrace" : 5,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/derived_page/../pager/include"
+				},
+				{
+					"backtrace" : 2,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/utility/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/opt/homebrew/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/pager/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/pager/../utility/include"
+				},
+				{
+					"backtrace" : 3,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/pager/../os/include"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/cmake-build-debug/_deps/googletest-src/googletest/include"
+				},
+				{
+					"backtrace" : 4,
+					"isSystem" : true,
+					"path" : "/Users/kai/Documents/CMU/2025 Spring/18671 Foundations of Database Design/\bB-Tree Layer/StorageEngine/cmake-build-debug/_deps/googletest-src/googletest"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					4
+				],
+				"standard" : "17"
+			},
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		}
+	],
+	"dependencies" : 
+	[
+		{
+			"backtrace" : 2,
+			"id" : "Utility::@23b027168f11ea0d609c"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "Pager::@e1a1986a2ebb98443743"
+		},
+		{
+			"backtrace" : 3,
+			"id" : "OS::@764cf4c35900eaba4831"
+		},
+		{
+			"backtrace" : 4,
+			"id" : "gtest::@1ea2dfc0605fe3ab2a3f"
+		}
+	],
+	"id" : "DerivedPage::@9132cf9ec19d45f19379",
+	"name" : "DerivedPage",
+	"nameOnDisk" : "libDerivedPage.a",
+	"paths" : 
+	{
+		"build" : "derived_page",
+		"source" : "derived_page"
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		},
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				3,
+				4,
+				5
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "derived_page/src/first_page.cc",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "derived_page/src/node_page.cc",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "derived_page/src/over_free_page.cc",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "derived_page/include/first_page.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "derived_page/include/node_page.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "derived_page/include/over_free_page.h",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "STATIC_LIBRARY"
+}

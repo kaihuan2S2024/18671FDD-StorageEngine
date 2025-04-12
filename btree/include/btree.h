@@ -172,6 +172,7 @@ class Btree {
   static Btree &RebuildInstance(const std::string &filename);
 
   // ############################ Btree Public Functions ####################
+  Btree(std::string filename, int cache_size);
   ResultCode BtreeSetCacheSize(int cache_size);
   ResultCode BtreeBeginTrans();
   ResultCode BtreeCommit();
